@@ -1,0 +1,28 @@
+version: '2'
+services:
+  zabbix-server:
+    image: monitoringartist/zabbix-xxl:latest
+    environment:
+      ZS_DBHost: zabbix.db
+      ZS_DBPassword: admin
+      ZS_DBUser: zabbix
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - ./temp:/usr/local/src/zabbix/temp
+    - ./conf/fonts/:/usr/local/src/zabbix/frontends/php/fonts/
+    - ./conf/defines.inc.php:/usr/local/src/zabbix/frontends/php/include/defines.inc.php
+    - ./conf/alertscripts:/usr/local/share/zabbix/alertscripts
+    links:
+    - zabbix-db:zabbix.db
+    ports:
+    - 80:80/tcp
+    - 10051:10051/tcp
+  zabbix-db:
+    image: monitoringartist/zabbix-db-mariadb
+    environment:
+      MARIADB_PASS: admin
+      MARIADB_USER: zabbix
+    volumes:
+    - ./data/zabbix-db-storage:/var/lib/mysql
+    - ./data/backups:/backups
+    - /etc/localtime:/etc/localtime:ro
